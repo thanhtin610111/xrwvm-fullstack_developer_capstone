@@ -15,7 +15,9 @@ const reviews_data = JSON.parse(
 const dealerships_data = JSON.parse(
     fs.readFileSync("./data/dealerships.json", 'utf8')
 );
-
+const car_records_data = JSON.parse(
+    fs.readFileSync("./data/car_records.json", 'utf8')
+);
 mongoose.connect(
     "mongodb://root:8ZmuXHCCPjdQLCV5gpU9F8rW@172.21.159.174:27017/",
     { dbName: "dealershipsDB" }
@@ -135,6 +137,19 @@ app.post('/insert_review', express.raw({ type: '*/*' }), async (req, res) => {
   }
 });
 
+
+app.get('/fetchCars', async (req, res) => {
+    try {
+        // Lọc qua mảng dữ liệu gốc và format lại key cho chuẩn
+        const filteredCars = car_records_data.cars.map(car => ({
+            CarMake: car.make,
+            CarModel: car.model
+        }));
+        res.json(filteredCars);
+    } catch (error) {
+        res.status(500).json({ error: 'Error fetching car records' });
+    }
+});
 // Start the Express server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

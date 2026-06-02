@@ -79,7 +79,20 @@ def registration(request):
         data = {"userName":username,"error":"Already Registered"}
         return JsonResponse(data)
 
-
+def get_dealers(request, state=None):
+    try:
+        if state:
+            # Nếu có truyền state (ví dụ: /get_dealers/Texas), gọi sang API lọc của Node.js
+            endpoint = f"/fetchDealers/{state}"
+        else:
+            # Nếu không có state, gọi lấy toàn bộ đại lý
+            endpoint = "/fetchDealers"
+            
+        dealerships = get_request(endpoint)
+        return JsonResponse({"status": 200, "dealers": dealerships})
+    except Exception as e:
+        logger.error(f"Error in get_dealers: {str(e)}")
+        return JsonResponse({"status": 500, "message": "Error fetching dealer documents"})
 # # Update the `get_dealerships` view to render the index page with
 # a list of dealerships
 def get_dealerships(request):
@@ -143,3 +156,22 @@ def add_review(request):
             return JsonResponse({"status": 400, "message": "Error in posting review"})
     else:
         return JsonResponse({"status": 405, "message": "Method Not Allowed"})
+
+# Create a `get_cars` view to fetch car makes and models from backend
+def get_cars(request):
+    try:
+        # Gọi trực tiếp sang microservice cổng 3030 để lấy dữ liệu từ car_records.json
+        carmodels = get_request("/fetchCars")
+        return JsonResponse({"CarModels": carmodels})
+    except Exception as e:
+        logger.error(f"Error in get_cars: {str(e)}")
+        return JsonResponse({"status": 500, "message": "Error fetching car models"})
+
+# Create an `analyze_review` view to handle sentiment analysis request
+def analyze_review(request, text):
+    try:
+        response = analyze_review_sentiments(text)
+        return JsonResponse(response)
+    except Exception as e:
+        logger.error(f"Error in analyze_review: {str(e)}")
+        return JsonResponse({"status": 500, "message": "Error analyzing sentiment"})
