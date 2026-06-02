@@ -20,8 +20,11 @@ const Dealer = () => {
   let root_url = curr_url.substring(0,curr_url.indexOf("dealer"));
   let params = useParams();
   let id =params.id;
-  let dealer_url = root_url+`djangoapp/dealer/${id}`;
-  let reviews_url = root_url+`djangoapp/reviews/dealer/${id}`;
+  // Sửa 'dealer/' thành 'get_dealer_details/'
+let dealer_url = root_url + `djangoapp/get_dealer_details/${id}`;
+
+// Sửa 'reviews/dealer/' thành 'get_dealer_reviews/'
+let reviews_url = root_url + `djangoapp/get_dealer_reviews/${id}`;
   let post_review = root_url+`postreview/${id}`;
   
   const get_dealer = async ()=>{
@@ -31,8 +34,8 @@ const Dealer = () => {
     const retobj = await res.json();
     
     if(retobj.status === 200) {
-      let dealerobjs = Array.from(retobj.dealer)
-      setDealer(dealerobjs[0])
+      // Vì Django trả về {"status": 200, "dealer": {...}} nên gán thẳng luôn:
+      setDealer(retobj.dealer);
     }
   }
 

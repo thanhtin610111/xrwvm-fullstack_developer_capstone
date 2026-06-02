@@ -14,7 +14,7 @@ import logging
 import json
 from django.views.decorators.csrf import csrf_exempt
 from .populate import initiate
-
+from .restapis import get_request, post_review
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -82,17 +82,64 @@ def registration(request):
 
 # # Update the `get_dealerships` view to render the index page with
 # a list of dealerships
-# def get_dealerships(request):
-# ...
+def get_dealerships(request):
+
+    if request.GET.get("state"):
+        state = request.GET.get("state")
+        dealerships = get_request(
+            "/fetchDealers/" + state
+        )
+    else:
+        dealerships = get_request(
+            "/fetchDealers"
+        )
+
+    return JsonResponse({
+        "status": 200,
+        "dealers": dealerships
+    })
 
 # Create a `get_dealer_reviews` view to render the reviews of a dealer
-# def get_dealer_reviews(request,dealer_id):
-# ...
+def get_dealer_reviews(request,dealer_id):
+    reviews = get_request(
+        "/fetchReviews/dealer/" + str(dealer_id)
+    )
+
+    return JsonResponse(
+        {
+            "status": 200,
+            "reviews": reviews
+        },
+        safe=False
+    )
 
 # Create a `get_dealer_details` view to render the dealer details
-# def get_dealer_details(request, dealer_id):
-# ...
+# Create a `get_dealer_details` view to render the dealer details
+def get_dealer_details(request, dealer_id):
+    dealer = get_request(
+        "/fetchDealer/" + str(dealer_id)
+    )
+    return JsonResponse(
+        {
+            "status": 200,
+            "dealer": dealer
+        }
+    )
 
 # Create a `add_review` view to submit a review
-# def add_review(request):
-# ...
+@csrf_exempt
+def add_review(request):
+    if request.user.is_authenticated == False:
+        return JsonResponse({"status": 403, "message": "Unauthorized"})
+        
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            # Sửa từ post_request("/insert_review", data) thành dòng dưới đây:
+            response = post_review(data) 
+            return JsonResponse({"status": 200, "message": "Review submitted successfully"})
+        except Exception as e:
+            logger.error(f"Error in add_review: {str(e)}")
+            return JsonResponse({"status": 400, "message": "Error in posting review"})
+    else:
+        return JsonResponse({"status": 405, "message": "Method Not Allowed"})

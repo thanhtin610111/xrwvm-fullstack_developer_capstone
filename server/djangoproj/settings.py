@@ -63,7 +63,10 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [   os.path.join(BASE_DIR,'frontend/static'),
                     os.path.join(BASE_DIR, 'frontend/build'),
-                    os.path.join(BASE_DIR, 'frontend/build/static')],
+                    os.path.join(BASE_DIR, 'frontend/build/static'),
+                    os.path.join(BASE_DIR, 'frontend/dist'),
+                ],
+                   
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
