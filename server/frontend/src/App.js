@@ -1,11 +1,14 @@
 import LoginPanel from "./components/Login/Login"
-import { Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<LoginPanel />} />
-    </Routes>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<LoginPanel />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
+
 export default App;
